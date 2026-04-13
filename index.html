@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zycer Family Budget</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f5f5f3;
+    --color-background-info: #e6f1fb;
+    --color-background-warning: #faeeda;
+    --color-background-success: #eaf3de;
+    --color-background-danger: #fcebeb;
+    --color-text-primary: #1a1a18;
+    --color-text-secondary: #6b6b67;
+    --color-text-info: #185FA5;
+    --color-text-warning: #BA7517;
+    --color-text-success: #3B6D11;
+    --color-text-danger: #A32D2D;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.2);
+    --color-border-primary: rgba(0,0,0,0.3);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-background-primary: #1c1c1a;
+      --color-background-secondary: #252523;
+      --color-background-info: #0c2a45;
+      --color-background-warning: #3a2800;
+      --color-background-success: #162b06;
+      --color-background-danger: #2e0f0f;
+      --color-text-primary: #e8e8e4;
+      --color-text-secondary: #9a9a94;
+      --color-text-info: #85B7EB;
+      --color-text-warning: #FAC775;
+      --color-text-success: #97C459;
+      --color-text-danger: #F09595;
+      --color-border-tertiary: rgba(255,255,255,0.1);
+      --color-border-secondary: rgba(255,255,255,0.18);
+    }
+  }
+  body { font-family: var(--font-sans); background: var(--color-background-secondary); color: var(--color-text-primary); min-height: 100vh; }
+  .wrapper { max-width: 700px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+  .bt-tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); overflow-x: auto; }
+  .bt-tab { padding: 8px 16px; font-size: 14px; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: var(--color-text-secondary); margin-bottom: -1px; white-space: nowrap; }
+  .bt-tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-text-primary); font-weight: 500; }
+  .bt-page { display: none; }
+  .bt-page.active { display: block; }
+
+  .bt-month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .bt-month-label { font-size: 18px; font-weight: 500; }
+  .bt-nav-btn { background: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 6px 14px; cursor: pointer; font-size: 14px; color: var(--color-text-primary); }
+  .bt-nav-btn:hover { background: var(--color-background-secondary); }
+
+  .bt-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .bt-metric { background: var(--color-background-primary); border-radius: var(--border-radius-md); padding: 14px 16px; border: 0.5px solid var(--color-border-tertiary); }
+  .bt-metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .bt-metric-val { font-size: 22px; font-weight: 500; }
+  .bt-metric-val.good { color: var(--color-text-success); }
+  .bt-metric-val.warn { color: var(--color-text-warning); }
+  .bt-metric-val.danger { color: var(--color-text-danger); }
+
+  .bt-cat-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem; }
+  .bt-cat-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  .bt-cat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .bt-cat-name { font-size: 14px; font-weight: 500; }
+  .bt-cat-amounts { font-size: 13px; color: var(--color-text-secondary); }
+  .bt-cat-amounts span { color: var(--color-text-primary); font-weight: 500; }
+  .bt-bar-bg { background: var(--color-background-secondary); border-radius: 99px; height: 8px; overflow: hidden; }
+  .bt-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+  .bt-bar-fill.good { background: #639922; }
+  .bt-bar-fill.warn { background: #EF9F27; }
+  .bt-bar-fill.danger { background: #E24B4A; }
+  .bt-cat-footer { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--color-text-secondary); }
+
+  .bt-add-form { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 20px; margin-bottom: 1.5rem; }
+  .bt-form-title { font-size: 15px; font-weight: 500; margin-bottom: 16px; }
+  .bt-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .bt-form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+  .bt-form-group label { font-size: 12px; color: var(--color-text-secondary); }
+  .bt-form-group input, .bt-form-group select { font-family: var(--font-sans); font-size: 14px; width: 100%; padding: 8px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .bt-toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13px; color: var(--color-text-secondary); }
+  .bt-toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+  .bt-toggle input { opacity: 0; width: 0; height: 0; }
+  .bt-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--color-border-secondary); border-radius: 99px; transition: 0.2s; }
+  .bt-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+  .bt-toggle input:checked + .bt-slider { background: #639922; }
+  .bt-toggle input:checked + .bt-slider:before { transform: translateX(16px); }
+  .bt-btn-primary { background: var(--color-text-primary); color: var(--color-background-primary); border: none; border-radius: var(--border-radius-md); padding: 10px 20px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; }
+  .bt-btn-primary:hover { opacity: 0.85; }
+
+  .bt-tx-list { display: flex; flex-direction: column; gap: 6px; }
+  .bt-tx-item { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 10px; padding: 12px 14px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); }
+  .bt-tx-name { font-size: 14px; font-weight: 500; }
+  .bt-tx-cat { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .bt-tx-badge { font-size: 10px; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+  .bt-tx-badge.recurring { background: var(--color-background-info); color: var(--color-text-info); }
+  .bt-tx-badge.once { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .bt-tx-amt { font-size: 14px; font-weight: 500; color: var(--color-text-danger); white-space: nowrap; }
+  .bt-tx-del { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 18px; line-height: 1; padding: 0 2px; }
+  .bt-tx-del:hover { color: var(--color-text-danger); }
+  .bt-empty { text-align: center; color: var(--color-text-secondary); font-size: 14px; padding: 2rem; }
+
+  .bt-upload-zone { border: 1.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 2rem; text-align: center; cursor: pointer; transition: background 0.2s; margin-bottom: 1rem; }
+  .bt-upload-zone:hover { background: var(--color-background-primary); }
+  .bt-upload-text { font-size: 14px; color: var(--color-text-secondary); }
+  .bt-upload-text strong { color: var(--color-text-primary); }
+  .bt-map-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .bt-map-table th { text-align: left; padding: 8px 4px; color: var(--color-text-secondary); font-weight: 400; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .bt-map-table td { padding: 8px 4px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); }
+  .bt-map-table select { font-size: 12px; padding: 4px; border: 0.5px solid var(--color-border-secondary); border-radius: 4px; background: var(--color-background-secondary); color: var(--color-text-primary); }
+
+  .bt-paycheck { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; margin-bottom: 10px; }
+  .bt-paycheck-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .bt-paycheck-source { font-size: 14px; font-weight: 500; }
+  .bt-paycheck-date { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .bt-paycheck-amt { font-size: 16px; font-weight: 500; color: var(--color-text-success); }
+  .bt-alloc-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); }
+  .bt-alloc-row:last-child { border: none; }
+  .bt-alloc-row span:last-child { font-weight: 500; color: var(--color-text-primary); }
+  .bt-alloc-row.highlight { background: var(--color-background-info); margin: 0 -16px; padding: 6px 16px; }
+  .bt-alloc-row.highlight span { color: var(--color-text-info) !important; }
+  .bt-denalt { background: var(--color-background-warning); border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 14px; font-size: 13px; color: var(--color-text-warning); border: 0.5px solid var(--color-border-tertiary); }
+  .bt-confirm { display: none; text-align: center; font-size: 13px; color: var(--color-text-success); margin-top: 10px; font-weight: 500; padding: 8px; background: var(--color-background-success); border-radius: var(--border-radius-md); }
+
+  .filter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .filter-row select { font-size: 13px; padding: 6px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div style="margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:flex-start;">
+    <div>
+      <div style="font-size:22px; font-weight:500; margin-bottom:2px;">Zycer Family Budget</div>
+      <div style="font-size:13px; color:var(--color-text-secondary);">Jonathan & wife — shared tracker</div>
+    </div>
+    <div style="font-size:12px; color:var(--color-text-secondary); text-align:right; margin-top:4px;">Budget: $2,500/mo</div>
+  </div>
+
+  <div class="bt-tabs">
+    <button class="bt-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button class="bt-tab" onclick="showPage('add',this)">Add expense</button>
+    <button class="bt-tab" onclick="showPage('transactions',this)">Transactions</button>
+    <button class="bt-tab" onclick="showPage('import',this)">Import CSV</button>
+    <button class="bt-tab" onclick="showPage('paychecks',this)">Paycheck plan</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="bt-page active">
+    <div class="bt-month-nav">
+      <button class="bt-nav-btn" onclick="changeMonth(-1)">&#8592;</button>
+      <div class="bt-month-label" id="month-label"></div>
+      <button class="bt-nav-btn" onclick="changeMonth(1)">&#8594;</button>
+    </div>
+    <div class="bt-summary-grid">
+      <div class="bt-metric"><div class="bt-metric-label">Spent (recurring)</div><div class="bt-metric-val" id="sum-spent">$0</div></div>
+      <div class="bt-metric"><div class="bt-metric-label">Monthly budget</div><div class="bt-metric-val">$2,500</div></div>
+      <div class="bt-metric"><div class="bt-metric-label">Remaining</div><div class="bt-metric-val" id="sum-remaining">$2,500</div></div>
+    </div>
+    <div class="bt-cat-list" id="cat-list"></div>
+    <div style="font-size:12px; color:var(--color-text-secondary); margin-top:0.5rem;">
+      One-time expenses this month: <strong id="oneoff-total" style="color:var(--color-text-primary);">$0</strong> — tracked separately, not counted against budget
+    </div>
+  </div>
+
+  <!-- ADD -->
+  <div id="page-add" class="bt-page">
+    <div class="bt-add-form">
+      <div class="bt-form-title">Log an expense</div>
+      <div class="bt-form-grid">
+        <div class="bt-form-group">
+          <label>Amount ($)</label>
+          <input type="number" id="inp-amount" placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="bt-form-group">
+          <label>Date</label>
+          <input type="date" id="inp-date">
+        </div>
+      </div>
+      <div class="bt-form-group">
+        <label>Category</label>
+        <select id="inp-cat">
+          <option value="">-- select category --</option>
+          <option>Shabbos food</option>
+          <option>Weekday groceries</option>
+          <option>Dining out</option>
+          <option>Amazon / shopping</option>
+          <option>Baby essentials</option>
+          <option>Barber / grooming</option>
+          <option>CVS / pharmacy</option>
+          <option>Treats / casual</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="bt-form-group">
+        <label>Note (optional)</label>
+        <input type="text" id="inp-note" placeholder="e.g. Trader Joe's, Amazon order...">
+      </div>
+      <div class="bt-toggle-row">
+        <label class="bt-toggle"><input type="checkbox" id="inp-oneoff"><span class="bt-slider"></span></label>
+        <span>One-time expense — won't count against monthly budget</span>
+      </div>
+      <button class="bt-btn-primary" onclick="addExpense()">Add expense</button>
+      <div class="bt-confirm" id="add-confirm">Saved successfully!</div>
+    </div>
+  </div>
+
+  <!-- TRANSACTIONS -->
+  <div id="page-transactions" class="bt-page">
+    <div class="filter-row">
+      <div style="font-size:15px; font-weight:500;">All transactions</div>
+      <select id="filter-month" onchange="renderTransactions()"></select>
+    </div>
+    <div class="bt-tx-list" id="tx-list"></div>
+  </div>
+
+  <!-- IMPORT -->
+  <div id="page-import" class="bt-page">
+    <div style="font-size:15px; font-weight:500; margin-bottom:6px;">Import from credit card</div>
+    <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:1rem;">Export a CSV from Bilt or Chase, upload it, assign categories, then import in bulk.</div>
+    <div class="bt-upload-zone" onclick="document.getElementById('csv-file').click()">
+      <div style="font-size:28px; color:var(--color-text-secondary); margin-bottom:8px;">&#8679;</div>
+      <div class="bt-upload-text"><strong>Click to upload CSV</strong></div>
+      <div style="font-size:12px; color:var(--color-text-secondary); margin-top:4px;">Works with Bilt, Chase, Amex exports</div>
+      <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="handleCSV(event)">
+    </div>
+    <div id="csv-preview" style="display:none;">
+      <div style="font-size:14px; font-weight:500; margin-bottom:10px;">Assign categories before importing</div>
+      <div style="overflow-x:auto;">
+        <table class="bt-map-table">
+          <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th></tr></thead>
+          <tbody id="csv-rows"></tbody>
+        </table>
+      </div>
+      <button class="bt-btn-primary" style="margin-top:12px;" onclick="importRows()">Import all rows</button>
+    </div>
+  </div>
+
+  <!-- PAYCHECKS -->
+  <div id="page-paychecks" class="bt-page">
+    <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:1rem;">Your exact playbook — what to do with each paycheck.</div>
+    <div class="bt-denalt"><strong>Denalt reminder:</strong> Invoice the 1st &rarr; follow up the 5th &rarr; collect by the 13th. Rent is due the 15th.</div>
+
+    <div class="bt-paycheck">
+      <div class="bt-paycheck-header">
+        <div><div class="bt-paycheck-source">Apple paycheck (~8th)</div><div class="bt-paycheck-date">Groceries, Shabbos, daily spending</div></div>
+        <div class="bt-paycheck-amt">+$3,680</div>
+      </div>
+      <div class="bt-alloc-row"><span>Shabbos food</span><span>$400</span></div>
+      <div class="bt-alloc-row"><span>Weekday groceries</span><span>$600</span></div>
+      <div class="bt-alloc-row"><span>Dining + misc variable</span><span>$680</span></div>
+      <div class="bt-alloc-row highlight"><span>Hold for rent (15th)</span><span>$2,000</span></div>
+    </div>
+
+    <div class="bt-paycheck">
+      <div class="bt-paycheck-header">
+        <div><div class="bt-paycheck-source">Denalt / Insigy (~13th)</div><div class="bt-paycheck-date">Must arrive before the 15th</div></div>
+        <div class="bt-paycheck-amt">+$1,800</div>
+      </div>
+      <div class="bt-alloc-row highlight"><span>Complete rent — $2,000 + $1,800 + buffer = $4,200</span><span>Rent paid &#10003;</span></div>
+    </div>
+
+    <div class="bt-paycheck">
+      <div class="bt-paycheck-header">
+        <div><div class="bt-paycheck-source">Apple paycheck (~24th)</div><div class="bt-paycheck-date">Debt paydown engine</div></div>
+        <div class="bt-paycheck-amt">+$3,680</div>
+      </div>
+      <div class="bt-alloc-row"><span>Tzedakah (13%)</span><span>$478</span></div>
+      <div class="bt-alloc-row"><span>Car lease hold</span><span>$550</span></div>
+      <div class="bt-alloc-row"><span>Rent contribution (next month)</span><span>$750</span></div>
+      <div class="bt-alloc-row highlight"><span>Bilt paydown — everything left</span><span>~$1,902</span></div>
+    </div>
+
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:14px 16px; font-size:13px; color:var(--color-text-secondary); margin-top:0.5rem; border: 0.5px solid var(--color-border-tertiary);">
+      Income: <strong style="color:var(--color-text-primary);">$9,160</strong> &nbsp;|&nbsp;
+      Fixed out: <strong style="color:var(--color-text-primary);">$5,228</strong> &nbsp;|&nbsp;
+      Variable budget: <strong style="color:var(--color-text-primary);">$2,500</strong> &nbsp;|&nbsp;
+      Surplus: <strong style="color:var(--color-text-success);">$1,432</strong>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS = [
+  { name: 'Shabbos food', budget: 400 },
+  { name: 'Weekday groceries', budget: 600 },
+  { name: 'Dining out', budget: 350 },
+  { name: 'Amazon / shopping', budget: 300 },
+  { name: 'Baby essentials', budget: 225 },
+  { name: 'Barber / grooming', budget: 80 },
+  { name: 'CVS / pharmacy', budget: 60 },
+  { name: 'Treats / casual', budget: 20 },
+  { name: 'Other', budget: 0 }
+];
+const BUDGET = 2500;
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let txs = JSON.parse(localStorage.getItem('zycer_budget_txs') || '[]');
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+function save() { localStorage.setItem('zycer_budget_txs', JSON.stringify(txs)); }
+
+function showPage(id, el) {
+  document.querySelectorAll('.bt-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bt-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'transactions') { populateFilterMonths(); renderTransactions(); }
+}
+
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  renderDashboard();
+}
+
+function monthTxs() {
+  return txs.filter(t => {
+    const d = new Date(t.date + 'T12:00:00');
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+}
+
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+
+function renderDashboard() {
+  document.getElementById('month-label').textContent = MONTHS[currentMonth] + ' ' + currentYear;
+  const mt = monthTxs();
+  const recurring = mt.filter(t => !t.oneoff);
+  const oneoff = mt.filter(t => t.oneoff);
+  const totalSpent = recurring.reduce((s, t) => s + t.amount, 0);
+  const remaining = BUDGET - totalSpent;
+  const remEl = document.getElementById('sum-remaining');
+  document.getElementById('sum-spent').textContent = fmt(totalSpent);
+  remEl.textContent = fmt(Math.max(0, remaining));
+  remEl.className = 'bt-metric-val ' + (remaining > 600 ? 'good' : remaining > 0 ? 'warn' : 'danger');
+  document.getElementById('oneoff-total').textContent = fmt(oneoff.reduce((s,t) => s+t.amount, 0));
+  const list = document.getElementById('cat-list');
+  list.innerHTML = '';
+  CATS.forEach(cat => {
+    const spent = recurring.filter(t => t.cat === cat.name).reduce((s,t) => s+t.amount, 0);
+    if (cat.budget === 0 && spent === 0) return;
+    const bgt = cat.budget;
+    const pct = bgt > 0 ? Math.min(100, Math.round((spent/bgt)*100)) : (spent > 0 ? 100 : 0);
+    const cls = pct < 75 ? 'good' : pct < 100 ? 'warn' : 'danger';
+    list.innerHTML += `<div class="bt-cat-card">
+      <div class="bt-cat-row">
+        <div class="bt-cat-name">${cat.name}</div>
+        <div class="bt-cat-amounts"><span>${fmt(spent)}</span> / ${bgt > 0 ? fmt(bgt) : '—'}</div>
+      </div>
+      <div class="bt-bar-bg"><div class="bt-bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <div class="bt-cat-footer"><span>${pct}% used</span><span>${bgt > 0 ? fmt(Math.max(0,bgt-spent)) + ' left' : ''}</span></div>
+    </div>`;
+  });
+}
+
+function addExpense() {
+  const amt = parseFloat(document.getElementById('inp-amount').value);
+  const date = document.getElementById('inp-date').value;
+  const cat = document.getElementById('inp-cat').value;
+  const note = document.getElementById('inp-note').value.trim();
+  const oneoff = document.getElementById('inp-oneoff').checked;
+  if (!amt || amt <= 0 || !date || !cat) { alert('Please fill in amount, date and category.'); return; }
+  txs.push({ id: Date.now() + Math.random(), amount: amt, date, cat, note, oneoff });
+  save();
+  document.getElementById('inp-amount').value = '';
+  document.getElementById('inp-note').value = '';
+  document.getElementById('inp-cat').value = '';
+  document.getElementById('inp-oneoff').checked = false;
+  const c = document.getElementById('add-confirm');
+  c.style.display = 'block';
+  setTimeout(() => c.style.display = 'none', 2500);
+  currentMonth = new Date(date + 'T12:00:00').getMonth();
+  currentYear = new Date(date + 'T12:00:00').getFullYear();
+  renderDashboard();
+}
+
+function populateFilterMonths() {
+  const sel = document.getElementById('filter-month');
+  const now = new Date().toISOString().slice(0,7);
+  const months = [...new Set([now, ...txs.map(t => t.date.slice(0,7))])].sort().reverse();
+  sel.innerHTML = months.map(m => `<option value="${m}">${MONTHS[parseInt(m.slice(5,7))-1]} ${m.slice(0,4)}</option>`).join('');
+}
+
+function renderTransactions() {
+  const chosen = document.getElementById('filter-month').value || new Date().toISOString().slice(0,7);
+  const filtered = txs.filter(t => t.date.slice(0,7) === chosen).sort((a,b) => b.date.localeCompare(a.date));
+  const list = document.getElementById('tx-list');
+  if (!filtered.length) { list.innerHTML = '<div class="bt-empty">No transactions this month yet.</div>'; return; }
+  list.innerHTML = filtered.map(t => `<div class="bt-tx-item">
+    <div><div class="bt-tx-name">${t.note || t.cat}</div><div class="bt-tx-cat">${t.cat} &middot; ${t.date}</div></div>
+    <span class="bt-tx-badge ${t.oneoff ? 'once' : 'recurring'}">${t.oneoff ? 'one-time' : 'recurring'}</span>
+    <div class="bt-tx-amt">-${fmt(t.amount)}</div>
+    <button class="bt-tx-del" onclick="deleteTx(${t.id})" title="Delete">&times;</button>
+  </div>`).join('');
+}
+
+function deleteTx(id) {
+  if (!confirm('Delete this transaction?')) return;
+  txs = txs.filter(t => t.id !== id);
+  save();
+  renderTransactions();
+  renderDashboard();
+}
+
+function handleCSV(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const lines = ev.target.result.split('\n').filter(l => l.trim());
+    const catOpts = CATS.map(c => `<option>${c.name}</option>`).join('');
+    const tbody = document.getElementById('csv-rows');
+    tbody.innerHTML = '';
+    let count = 0;
+    lines.slice(1).forEach((line, i) => {
+      const cols = line.match(/(".*?"|[^,\n]+)/g) || [];
+      const clean = cols.map(c => c.replace(/^"|"$/g,'').trim());
+      const amtRaw = clean.find(x => /^\$?[\d,]+\.?\d*$/.test(x.replace(/[$,]/g,'')));
+      const amt = amtRaw ? parseFloat(amtRaw.replace(/[$,]/g,'')) : 0;
+      if (amt <= 0 || count >= 60) return;
+      const date = clean[0] || '';
+      const desc = clean[1] || clean[2] || '';
+      tbody.innerHTML += `<tr data-date="${date}" data-desc="${desc}" data-amt="${amt}">
+        <td>${date}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${desc}">${desc}</td>
+        <td>${fmt(amt)}</td>
+        <td><select>${catOpts}</select></td>
+      </tr>`;
+      count++;
+    });
+    document.getElementById('csv-preview').style.display = count > 0 ? 'block' : 'none';
+    if (count === 0) alert('No valid transactions found. Make sure this is a CSV with amounts.');
+  };
+  reader.readAsText(file);
+}
+
+function importRows() {
+  const rows = document.querySelectorAll('#csv-rows tr');
+  let count = 0;
+  rows.forEach(row => {
+    const amt = parseFloat(row.dataset.amt);
+    const rawDate = row.dataset.date;
+    const desc = row.dataset.desc;
+    const cat = row.querySelector('select').value;
+    if (!amt || !rawDate) return;
+    let date = rawDate;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+      const d = new Date(rawDate);
+      if (!isNaN(d)) date = d.toISOString().slice(0,10);
+    }
+    txs.push({ id: Date.now() + Math.random(), amount: amt, date, cat, note: desc, oneoff: false });
+    count++;
+  });
+  save();
+  document.getElementById('csv-preview').style.display = 'none';
+  document.getElementById('csv-file').value = '';
+  alert(count + ' transactions imported! Go to Dashboard to see your updated budget.');
+  renderDashboard();
+}
+
+document.getElementById('inp-date').value = new Date().toISOString().slice(0,10);
+renderDashboard();
+</script>
+</body>
+</html>
