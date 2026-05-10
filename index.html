@@ -7,42 +7,21 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
-    --bg: #f5f5f3;
-    --surface: #ffffff;
-    --border: rgba(0,0,0,0.1);
-    --border-med: rgba(0,0,0,0.18);
-    --text: #1a1a18;
-    --text-muted: #6b6b67;
-    --text-success: #3B6D11;
-    --text-warning: #BA7517;
-    --text-danger: #A32D2D;
-    --text-info: #185FA5;
-    --bg-success: #eaf3de;
-    --bg-warning: #faeeda;
-    --bg-danger: #fcebeb;
-    --bg-info: #e6f1fb;
-    --bg-secondary: #f0f0ee;
-    --radius: 8px;
-    --radius-lg: 12px;
+    --bg: #f5f5f3; --surface: #ffffff; --border: rgba(0,0,0,0.1);
+    --border-med: rgba(0,0,0,0.18); --text: #1a1a18; --text-muted: #6b6b67;
+    --text-success: #3B6D11; --text-warning: #BA7517; --text-danger: #A32D2D;
+    --text-info: #185FA5; --bg-success: #eaf3de; --bg-warning: #faeeda;
+    --bg-danger: #fcebeb; --bg-info: #e6f1fb; --bg-secondary: #f0f0ee;
+    --radius: 8px; --radius-lg: 12px;
     --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #141412;
-      --surface: #1c1c1a;
-      --border: rgba(255,255,255,0.1);
-      --border-med: rgba(255,255,255,0.18);
-      --text: #e8e8e4;
-      --text-muted: #9a9a94;
-      --text-success: #97C459;
-      --text-warning: #FAC775;
-      --text-danger: #F09595;
-      --text-info: #85B7EB;
-      --bg-success: #162b06;
-      --bg-warning: #3a2800;
-      --bg-danger: #2e0f0f;
-      --bg-info: #0c2a45;
-      --bg-secondary: #252523;
+      --bg: #141412; --surface: #1c1c1a; --border: rgba(255,255,255,0.1);
+      --border-med: rgba(255,255,255,0.18); --text: #e8e8e4; --text-muted: #9a9a94;
+      --text-success: #97C459; --text-warning: #FAC775; --text-danger: #F09595;
+      --text-info: #85B7EB; --bg-success: #162b06; --bg-warning: #3a2800;
+      --bg-danger: #2e0f0f; --bg-info: #0c2a45; --bg-secondary: #252523;
     }
   }
   body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -60,7 +39,7 @@
   .page { display: none; }
   .page.active { display: block; }
   .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
-  .month-label { font-size: 17px; font-weight: 500; }
+  .month-label { font-size: 15px; font-weight: 500; }
   .nav-btn { background: none; border: 0.5px solid var(--border-med); border-radius: var(--radius); padding: 6px 14px; cursor: pointer; font-size: 14px; color: var(--text); font-family: var(--font); }
   .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1.25rem; }
   .metric { background: var(--surface); border-radius: var(--radius); padding: 12px 14px; border: 0.5px solid var(--border); }
@@ -99,6 +78,8 @@
   .btn-primary { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 11px 20px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; font-family: var(--font); transition: opacity 0.15s; }
   .btn-primary:hover { opacity: 0.82; }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-export { background: none; border: 0.5px solid var(--border-med); border-radius: var(--radius); padding: 10px 20px; font-size: 13px; cursor: pointer; color: var(--text-muted); font-family: var(--font); width: 100%; margin-top: 12px; transition: all 0.2s; }
+  .btn-export:hover { border-color: var(--text-success); color: var(--text-success); }
   .confirm-msg { display: none; text-align: center; font-size: 13px; color: var(--text-success); margin-top: 10px; font-weight: 500; padding: 8px; background: var(--bg-success); border-radius: var(--radius); }
   .filter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
   .filter-row select { font-size: 13px; padding: 6px 10px; border: 0.5px solid var(--border-med); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: var(--font); }
@@ -113,8 +94,6 @@
   .tx-del { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 17px; padding: 0 2px; line-height: 1; }
   .tx-del:hover { color: var(--text-danger); }
   .empty { text-align: center; color: var(--text-muted); font-size: 14px; padding: 2.5rem 1rem; }
-  .btn-export { background: none; border: 0.5px solid var(--border-med); border-radius: var(--radius); padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); font-family: var(--font); transition: all 0.2s; margin-top: 12px; width: 100%; }
-  .btn-export:hover { border-color: var(--text-success); color: var(--text-success); }
   .upload-zone { border: 1.5px dashed var(--border-med); border-radius: var(--radius-lg); padding: 2rem; text-align: center; cursor: pointer; margin-bottom: 1rem; }
   .upload-zone:hover { background: var(--surface); }
   .map-wrap { overflow-x: auto; }
@@ -122,10 +101,11 @@
   .map-table th { text-align: left; padding: 7px 4px; color: var(--text-muted); font-weight: 400; border-bottom: 0.5px solid var(--border); }
   .map-table td { padding: 7px 4px; border-bottom: 0.5px solid var(--border); color: var(--text); }
   .map-table select { font-size: 11px; padding: 3px; border: 0.5px solid var(--border-med); border-radius: 4px; background: var(--bg-secondary); color: var(--text); }
-  .bilt-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 15px; margin-bottom: 16px; }
-  .bilt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .bilt-label { font-size: 11px; font-family: monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .bilt-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; }
+  .bilt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .bilt-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
   .bilt-balance { font-size: 26px; font-weight: 600; color: var(--text-danger); }
+  .bilt-goal { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
   .bilt-progress-bg { background: var(--bg-secondary); border-radius: 99px; height: 8px; overflow: hidden; margin-bottom: 8px; }
   .bilt-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #639922, #EF9F27); transition: width 0.5s ease; }
   .bilt-footer { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
@@ -164,6 +144,7 @@
     <button class="tab" onclick="showPage('paychecks',this)">Paycheck plan</button>
   </div>
 
+  <!-- DASHBOARD -->
   <div id="page-dashboard" class="page active">
     <div class="month-nav">
       <button class="nav-btn" onclick="changeMonth(-1)">&#8592;</button>
@@ -176,9 +157,10 @@
       <div class="metric"><div class="metric-label">Remaining</div><div class="metric-val" id="sum-remaining">$2,500</div></div>
     </div>
     <div class="cat-list" id="cat-list"><div class="empty">Loading...</div></div>
-    <div class="oneoff-note">One-time expenses this month: <strong id="oneoff-total">$0</strong> — tracked separately, not counted against budget</div>
+    <div class="oneoff-note">One-time expenses this cycle: <strong id="oneoff-total">$0</strong> — tracked separately, not counted against budget</div>
   </div>
 
+  <!-- ADD EXPENSE -->
   <div id="page-add" class="page">
     <div class="form-card">
       <div class="form-title">Log an expense</div>
@@ -209,18 +191,38 @@
         <span>One-time expense — won't count against monthly budget</span>
       </div>
       <button class="btn-primary" id="add-btn" onclick="addExpense()">Add expense</button>
-      <div class="confirm-msg" id="add-confirm">Saved and synced to both devices!</div>
+      <div class="confirm-msg" id="add-confirm">Saved and synced!</div>
     </div>
   </div>
 
+  <!-- TRANSACTIONS -->
   <div id="page-transactions" class="page">
+    <!-- Bilt Paydown Tracker -->
+    <div class="bilt-card">
+      <div class="bilt-header">
+        <div>
+          <div class="bilt-label">Bilt card paydown</div>
+          <div class="bilt-balance" id="bilt-balance">$3,300</div>
+          <div class="bilt-goal">Goal: January 2027</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;color:var(--text-muted);">Progress</div>
+          <div style="font-size:20px;font-weight:600;color:var(--text-success);" id="bilt-pct">65%</div>
+          <div style="font-size:11px;color:var(--text-muted);" id="bilt-paid">$6,100 paid</div>
+        </div>
+      </div>
+      <div class="bilt-progress-bg"><div class="bilt-progress-fill" id="bilt-bar" style="width:65%"></div></div>
+      <div class="bilt-footer"><span>Started: $9,400</span><span id="bilt-monthly">~$400/mo payment</span></div>
+    </div>
     <div class="filter-row">
-      <div style="font-size:15px;font-weight:500;">All transactions</div>
+      <div style="font-size:15px;font-weight:500;">Transactions</div>
       <select id="filter-month" onchange="renderTransactions()"></select>
     </div>
     <div class="tx-list" id="tx-list"><div class="empty">Loading...</div></div>
+    <button class="btn-export" onclick="exportCSV()">&#8659; Export this cycle as CSV</button>
   </div>
 
+  <!-- IMPORT CSV -->
   <div id="page-import" class="page">
     <div style="font-size:15px;font-weight:500;margin-bottom:6px;">Import from credit card</div>
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Export a CSV from Bilt or Chase, upload it, assign categories, import in bulk.</div>
@@ -240,6 +242,7 @@
     </div>
   </div>
 
+  <!-- PAYCHECK PLAN -->
   <div id="page-paychecks" class="page">
     <div style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Your exact playbook for each paycheck.</div>
     <div class="denalt-box"><strong>Denalt reminder:</strong> Invoice the 1st → follow up the 5th → collect by the 13th. Rent is due the 15th.</div>
@@ -255,13 +258,14 @@
       <div class="alloc-row hi"><span>Complete rent — $2,000 + $1,800 + buffer</span><span>$4,200 ✓</span></div>
     </div>
     <div class="paycheck-card">
-      <div class="paycheck-hdr"><div><div class="paycheck-source">Apple paycheck (~24th)</div><div class="paycheck-date">Debt paydown engine</div></div><div class="paycheck-amt">+$3,680</div></div>
+      <div class="paycheck-hdr"><div><div class="paycheck-source">Apple paycheck (~24th)</div><div class="paycheck-date">Debt paydown + savings</div></div><div class="paycheck-amt">+$3,680</div></div>
       <div class="alloc-row"><span>Tzedakah (13%)</span><span>$478</span></div>
       <div class="alloc-row"><span>Car lease hold</span><span>$550</span></div>
-      <div class="alloc-row"><span>Rent contribution (next month)</span><span>$750</span></div>
-      <div class="alloc-row hi"><span>Bilt paydown — everything left</span><span>~$1,902</span></div>
+      <div class="alloc-row"><span>Rent contribution (next cycle)</span><span>$750</span></div>
+      <div class="alloc-row"><span>Bilt paydown</span><span>$400</span></div>
+      <div class="alloc-row hi"><span>Cash savings</span><span>$300</span></div>
     </div>
-    <div class="info-strip">Income: <strong>$9,160</strong> &nbsp;|&nbsp; Fixed: <strong>$5,228</strong> &nbsp;|&nbsp; Variable budget: <strong>$2,500</strong> &nbsp;|&nbsp; Surplus: <strong style="color:var(--text-success)">$1,432</strong></div>
+    <div class="info-strip">Income: <strong>$9,160</strong> &nbsp;|&nbsp; Variable budget: <strong>$2,500</strong> &nbsp;|&nbsp; Bilt payment: <strong>$400/mo</strong> &nbsp;|&nbsp; Savings: <strong style="color:var(--text-success)">$300/mo</strong></div>
   </div>
 </div>
 
@@ -278,9 +282,6 @@ const firebaseConfig = {
   appId: "1:599163178785:web:07a88a0045ddfe60e4f860"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-
 const CATS = [
   { name: 'Shabbos food', budget: 400 },
   { name: 'Weekday groceries', budget: 600 },
@@ -293,12 +294,12 @@ const CATS = [
   { name: 'Other', budget: 0 }
 ];
 const BUDGET = 2500;
-// ─── 4-WEEK CYCLE SYSTEM ───
-// Cycles start Apr 13 2026, repeat every 28 days
-const CYCLE_START = new Date('2026-04-13T00:00:00'); // Cycle 0: Apr 13-May 10 | Cycle 1: May 11-Jun 7 | Cycle 2: Jun 8-Jul 5
+
+// 4-week cycles starting Apr 13 2026
+const CYCLE_START = new Date('2026-04-13T00:00:00');
 
 function getCycleIndex(date) {
-  const d = new Date(date);
+  const d = new Date(typeof date === 'string' ? date + 'T12:00:00' : date);
   const diff = d - CYCLE_START;
   return Math.floor(diff / (28 * 24 * 60 * 60 * 1000));
 }
@@ -308,6 +309,7 @@ function getCycleBounds(index) {
   start.setDate(start.getDate() + index * 28);
   const end = new Date(start);
   end.setDate(end.getDate() + 27);
+  end.setHours(23, 59, 59);
   return { start, end };
 }
 
@@ -320,33 +322,34 @@ function formatCycleLabel(index) {
 function dateInCycle(dateStr, index) {
   const d = new Date(dateStr + 'T12:00:00');
   const { start, end } = getCycleBounds(index);
-  const endDay = new Date(end);
-  endDay.setHours(23, 59, 59);
-  return d >= start && d <= endDay;
+  return d >= start && d <= end;
 }
 
 let allTxs = [];
 let currentCycle = getCycleIndex(new Date());
 
 function setSync(state, text) {
-  const dot = document.getElementById('sync-dot');
-  dot.className = 'sync-dot ' + state;
+  document.getElementById('sync-dot').className = 'sync-dot ' + state;
   document.getElementById('sync-text').textContent = text;
 }
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
 const q = query(collection(db, 'transactions'), orderBy('date', 'desc'));
 onSnapshot(q, (snapshot) => {
   allTxs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-  setSync('live', 'Live — both devices synced');
+  setSync('live', 'Live — synced');
   renderDashboard();
   if (document.getElementById('page-transactions').classList.contains('active')) {
-    populateFilterCycles(); renderTransactions();
+    populateFilterCycles();
+    renderTransactions();
   }
-}, () => setSync('error', 'Sync error — check connection'));
+}, () => setSync('error', 'Sync error — check Firebase rules'));
 
 function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
 
-function monthTxs() {
+function cycleTxs() {
   return allTxs.filter(t => dateInCycle(t.date, currentCycle));
 }
 
@@ -366,7 +369,7 @@ window.changeMonth = (dir) => {
 
 function renderDashboard() {
   document.getElementById('month-label').textContent = formatCycleLabel(currentCycle);
-  const mt = monthTxs();
+  const mt = cycleTxs();
   const recurring = mt.filter(t => !t.oneoff);
   const oneoff = mt.filter(t => t.oneoff);
   const totalSpent = recurring.reduce((s, t) => s + t.amount, 0);
@@ -375,21 +378,21 @@ function renderDashboard() {
   document.getElementById('sum-spent').textContent = fmt(totalSpent);
   remEl.textContent = fmt(Math.max(0, remaining));
   remEl.className = 'metric-val ' + (remaining > 600 ? 'good' : remaining > 0 ? 'warn' : 'danger');
-  document.getElementById('oneoff-total').textContent = fmt(oneoff.reduce((s,t) => s+t.amount, 0));
+  document.getElementById('oneoff-total').textContent = fmt(oneoff.reduce((s, t) => s + t.amount, 0));
   const list = document.getElementById('cat-list');
   let html = '';
   CATS.forEach(cat => {
-    const spent = recurring.filter(t => t.cat === cat.name).reduce((s,t) => s+t.amount, 0);
+    const spent = recurring.filter(t => t.cat === cat.name).reduce((s, t) => s + t.amount, 0);
     if (cat.budget === 0 && spent === 0) return;
-    const pct = cat.budget > 0 ? Math.min(100, Math.round((spent/cat.budget)*100)) : (spent > 0 ? 100 : 0);
+    const pct = cat.budget > 0 ? Math.min(100, Math.round((spent / cat.budget) * 100)) : (spent > 0 ? 100 : 0);
     const cls = pct < 75 ? 'good' : pct < 100 ? 'warn' : 'danger';
     html += `<div class="cat-card">
       <div class="cat-row"><div class="cat-name">${cat.name}</div><div class="cat-amounts"><strong>${fmt(spent)}</strong> / ${cat.budget > 0 ? fmt(cat.budget) : '—'}</div></div>
       <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
-      <div class="cat-footer"><span>${pct}% used</span><span>${cat.budget > 0 ? fmt(Math.max(0,cat.budget-spent)) + ' left' : ''}</span></div>
+      <div class="cat-footer"><span>${pct}% used</span><span>${cat.budget > 0 ? fmt(Math.max(0, cat.budget - spent)) + ' left' : ''}</span></div>
     </div>`;
   });
-  list.innerHTML = html || '<div class="empty">No expenses logged this month yet.<br>Tap "Add expense" to get started.</div>';
+  list.innerHTML = html || '<div class="empty">No expenses this cycle yet.<br>Tap "Add expense" to get started.</div>';
 }
 
 window.addExpense = async () => {
@@ -411,17 +414,16 @@ window.addExpense = async () => {
     const c = document.getElementById('add-confirm');
     c.style.display = 'block';
     setTimeout(() => c.style.display = 'none', 2500);
-    currentCycle = getCycleIndex(new Date(date + 'T12:00:00'));
+    currentCycle = getCycleIndex(date);
   } catch(e) { alert('Error saving: ' + e.message); }
   btn.disabled = false; btn.textContent = 'Add expense';
 };
 
 function populateFilterCycles() {
   const sel = document.getElementById('filter-month');
-  // Find all cycles that have transactions, plus current
   const cycleSet = new Set([currentCycle]);
   allTxs.forEach(t => cycleSet.add(getCycleIndex(t.date)));
-  const cycles = [...cycleSet].sort((a,b) => b - a);
+  const cycles = [...cycleSet].sort((a, b) => b - a);
   const cur = sel.value;
   sel.innerHTML = cycles.map(i => `<option value="${i}">${formatCycleLabel(i)}</option>`).join('');
   if (cur) sel.value = cur;
@@ -432,7 +434,7 @@ function renderTransactions() {
   const cycleIdx = isNaN(chosenCycle) ? currentCycle : chosenCycle;
   const filtered = allTxs.filter(t => dateInCycle(t.date, cycleIdx));
   const list = document.getElementById('tx-list');
-  if (!filtered.length) { list.innerHTML = '<div class="empty">No transactions this month.</div>'; return; }
+  if (!filtered.length) { list.innerHTML = '<div class="empty">No transactions this cycle.</div>'; return; }
   list.innerHTML = filtered.map(t => `<div class="tx-item">
     <div><div class="tx-name">${t.note || t.cat}</div><div class="tx-meta">${t.cat} · ${t.date}${t.who ? ' · ' + t.who : ''}</div></div>
     <span class="tx-badge ${t.oneoff ? 'once' : 'recurring'}">${t.oneoff ? 'one-time' : 'recurring'}</span>
@@ -447,6 +449,25 @@ window.deleteTx = async (id) => {
   catch(e) { alert('Error: ' + e.message); }
 };
 
+window.exportCSV = () => {
+  const chosenCycle = parseInt(document.getElementById('filter-month').value);
+  const cycleIdx = isNaN(chosenCycle) ? currentCycle : chosenCycle;
+  const txs = allTxs.filter(t => dateInCycle(t.date, cycleIdx));
+  if (!txs.length) { alert('No transactions in this cycle to export.'); return; }
+  const { start, end } = getCycleBounds(cycleIdx);
+  const fmtDate = d => d.toISOString().slice(0, 10);
+  const header = ['Date', 'Category', 'Note', 'Amount', 'Type', 'Added By'];
+  const rows = txs.map(t => [t.date, t.cat, (t.note || '').replace(/,/g, ' '), t.amount.toFixed(2), t.oneoff ? 'one-time' : 'recurring', t.who || '']);
+  const csv = [header, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'budget-' + fmtDate(start) + '-to-' + fmtDate(end) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 window.handleCSV = (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -459,9 +480,9 @@ window.handleCSV = (e) => {
     let count = 0;
     lines.slice(1).forEach(line => {
       const cols = line.match(/(".*?"|[^,\n]+)/g) || [];
-      const clean = cols.map(c => c.replace(/^"|"$/g,'').trim());
-      const amtRaw = clean.find(x => /^\$?[\d,]+\.?\d*$/.test(x.replace(/[$,]/g,'')));
-      const amt = amtRaw ? parseFloat(amtRaw.replace(/[$,]/g,'')) : 0;
+      const clean = cols.map(c => c.replace(/^"|"$/g, '').trim());
+      const amtRaw = clean.find(x => /^\$?[\d,]+\.?\d*$/.test(x.replace(/[$,]/g, '')));
+      const amt = amtRaw ? parseFloat(amtRaw.replace(/[$,]/g, '')) : 0;
       if (amt <= 0 || count >= 60) return;
       const date = clean[0] || '', desc = clean[1] || clean[2] || '';
       tbody.innerHTML += `<tr data-date="${date}" data-desc="${desc}" data-amt="${amt}">
@@ -483,7 +504,10 @@ window.importRows = async () => {
     const rawDate = row.dataset.date;
     if (!amt || !rawDate) continue;
     let date = rawDate;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) { const d = new Date(rawDate); if (!isNaN(d)) date = d.toISOString().slice(0,10); }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+      const d = new Date(rawDate);
+      if (!isNaN(d)) date = d.toISOString().slice(0, 10);
+    }
     await addDoc(collection(db, 'transactions'), { amount: amt, date, cat: row.querySelector('select').value, note: row.dataset.desc, who: 'Import', oneoff: false, createdAt: new Date().toISOString() });
     count++;
   }
@@ -492,49 +516,8 @@ window.importRows = async () => {
   alert(count + ' transactions imported and synced!');
 };
 
-document.getElementById('inp-date').value = new Date().toISOString().slice(0,10);
-// ─── BILT TRACKER ───
-const BILT_START = 9400;  // Original balance when tracking started
-const BILT_CURRENT = 3300; // Current effective balance (after k payment + .2k pending refund)
-
-function updateBiltTracker() {
-  const paid = BILT_START - BILT_CURRENT;
-  const pct = Math.round((paid / BILT_START) * 100);
-  document.getElementById('bilt-balance').textContent = '$' + BILT_CURRENT.toLocaleString();
-  document.getElementById('bilt-bar').style.width = pct + '%';
-  document.getElementById('bilt-paid').textContent = '$' + paid.toLocaleString() + ' paid off (' + pct + '%)';
-}
-updateBiltTracker();
-
-// ─── EXPORT CSV ───
-window.exportCSV = () => {
-  const chosenCycle = parseInt(document.getElementById('filter-month').value);
-  const cycleIdx = isNaN(chosenCycle) ? currentCycle : chosenCycle;
-  const txs = allTxs.filter(t => dateInCycle(t.date, cycleIdx));
-  if (!txs.length) { alert('No transactions in this cycle to export.'); return; }
-  const { start, end } = getCycleBounds(cycleIdx);
-  const fmt2 = d => d.toISOString().slice(0,10);
-  const header = ['Date', 'Category', 'Note', 'Amount', 'Type', 'Added By'];
-  const rows = txs.map(t => [
-    t.date,
-    t.cat,
-    (t.note || '').replace(/,/g, ' '),
-    t.amount.toFixed(2),
-    t.oneoff ? 'one-time' : 'recurring',
-    t.who || ''
-  ]);
-  const csv = [header, ...rows].map(r => r.join(',')).join('
-');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'budget-' + fmt2(start) + '-to-' + fmt2(end) + '.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
+document.getElementById('inp-date').value = new Date().toISOString().slice(0, 10);
+renderDashboard();
 </script>
 </body>
 </html>
-
