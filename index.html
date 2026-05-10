@@ -113,6 +113,8 @@
   .tx-del { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 17px; padding: 0 2px; line-height: 1; }
   .tx-del:hover { color: var(--text-danger); }
   .empty { text-align: center; color: var(--text-muted); font-size: 14px; padding: 2.5rem 1rem; }
+  .btn-export { background: none; border: 0.5px solid var(--border-med); border-radius: var(--radius); padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); font-family: var(--font); transition: all 0.2s; margin-top: 12px; width: 100%; }
+  .btn-export:hover { border-color: var(--text-success); color: var(--text-success); }
   .upload-zone { border: 1.5px dashed var(--border-med); border-radius: var(--radius-lg); padding: 2rem; text-align: center; cursor: pointer; margin-bottom: 1rem; }
   .upload-zone:hover { background: var(--surface); }
   .map-wrap { overflow-x: auto; }
@@ -120,6 +122,13 @@
   .map-table th { text-align: left; padding: 7px 4px; color: var(--text-muted); font-weight: 400; border-bottom: 0.5px solid var(--border); }
   .map-table td { padding: 7px 4px; border-bottom: 0.5px solid var(--border); color: var(--text); }
   .map-table select { font-size: 11px; padding: 3px; border: 0.5px solid var(--border-med); border-radius: 4px; background: var(--bg-secondary); color: var(--text); }
+  .bilt-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 15px; margin-bottom: 16px; }
+  .bilt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .bilt-label { font-size: 11px; font-family: monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .bilt-balance { font-size: 26px; font-weight: 600; color: var(--text-danger); }
+  .bilt-progress-bg { background: var(--bg-secondary); border-radius: 99px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+  .bilt-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #639922, #EF9F27); transition: width 0.5s ease; }
+  .bilt-footer { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
   .paycheck-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 15px; margin-bottom: 10px; }
   .paycheck-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 11px; padding-bottom: 10px; border-bottom: 0.5px solid var(--border); }
   .paycheck-source { font-size: 13px; font-weight: 500; }
@@ -284,11 +293,40 @@ const CATS = [
   { name: 'Other', budget: 0 }
 ];
 const BUDGET = 2500;
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+// ─── 4-WEEK CYCLE SYSTEM ───
+// Cycles start Apr 13 2026, repeat every 28 days
+const CYCLE_START = new Date('2026-04-13T00:00:00'); // Cycle 0: Apr 13-May 10 | Cycle 1: May 11-Jun 7 | Cycle 2: Jun 8-Jul 5
+
+function getCycleIndex(date) {
+  const d = new Date(date);
+  const diff = d - CYCLE_START;
+  return Math.floor(diff / (28 * 24 * 60 * 60 * 1000));
+}
+
+function getCycleBounds(index) {
+  const start = new Date(CYCLE_START);
+  start.setDate(start.getDate() + index * 28);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 27);
+  return { start, end };
+}
+
+function formatCycleLabel(index) {
+  const { start, end } = getCycleBounds(index);
+  const fmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return fmt(start) + ' – ' + fmt(end);
+}
+
+function dateInCycle(dateStr, index) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const { start, end } = getCycleBounds(index);
+  const endDay = new Date(end);
+  endDay.setHours(23, 59, 59);
+  return d >= start && d <= endDay;
+}
 
 let allTxs = [];
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
+let currentCycle = getCycleIndex(new Date());
 
 function setSync(state, text) {
   const dot = document.getElementById('sync-dot');
@@ -302,17 +340,14 @@ onSnapshot(q, (snapshot) => {
   setSync('live', 'Live — both devices synced');
   renderDashboard();
   if (document.getElementById('page-transactions').classList.contains('active')) {
-    populateFilterMonths(); renderTransactions();
+    populateFilterCycles(); renderTransactions();
   }
 }, () => setSync('error', 'Sync error — check connection'));
 
 function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
 
 function monthTxs() {
-  return allTxs.filter(t => {
-    const d = new Date(t.date + 'T12:00:00');
-    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-  });
+  return allTxs.filter(t => dateInCycle(t.date, currentCycle));
 }
 
 window.showPage = (id, el) => {
@@ -321,18 +356,16 @@ window.showPage = (id, el) => {
   document.getElementById('page-' + id).classList.add('active');
   el.classList.add('active');
   if (id === 'dashboard') renderDashboard();
-  if (id === 'transactions') { populateFilterMonths(); renderTransactions(); }
+  if (id === 'transactions') { populateFilterCycles(); renderTransactions(); }
 };
 
 window.changeMonth = (dir) => {
-  currentMonth += dir;
-  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  currentCycle += dir;
   renderDashboard();
 };
 
 function renderDashboard() {
-  document.getElementById('month-label').textContent = MONTHS[currentMonth] + ' ' + currentYear;
+  document.getElementById('month-label').textContent = formatCycleLabel(currentCycle);
   const mt = monthTxs();
   const recurring = mt.filter(t => !t.oneoff);
   const oneoff = mt.filter(t => t.oneoff);
@@ -378,24 +411,26 @@ window.addExpense = async () => {
     const c = document.getElementById('add-confirm');
     c.style.display = 'block';
     setTimeout(() => c.style.display = 'none', 2500);
-    currentMonth = new Date(date + 'T12:00:00').getMonth();
-    currentYear = new Date(date + 'T12:00:00').getFullYear();
+    currentCycle = getCycleIndex(new Date(date + 'T12:00:00'));
   } catch(e) { alert('Error saving: ' + e.message); }
   btn.disabled = false; btn.textContent = 'Add expense';
 };
 
-function populateFilterMonths() {
+function populateFilterCycles() {
   const sel = document.getElementById('filter-month');
-  const now = new Date().toISOString().slice(0,7);
-  const months = [...new Set([now, ...allTxs.map(t => t.date.slice(0,7))])].sort().reverse();
+  // Find all cycles that have transactions, plus current
+  const cycleSet = new Set([currentCycle]);
+  allTxs.forEach(t => cycleSet.add(getCycleIndex(t.date)));
+  const cycles = [...cycleSet].sort((a,b) => b - a);
   const cur = sel.value;
-  sel.innerHTML = months.map(m => `<option value="${m}">${MONTHS[parseInt(m.slice(5,7))-1]} ${m.slice(0,4)}</option>`).join('');
+  sel.innerHTML = cycles.map(i => `<option value="${i}">${formatCycleLabel(i)}</option>`).join('');
   if (cur) sel.value = cur;
 }
 
 function renderTransactions() {
-  const chosen = document.getElementById('filter-month').value || new Date().toISOString().slice(0,7);
-  const filtered = allTxs.filter(t => t.date.slice(0,7) === chosen);
+  const chosenCycle = parseInt(document.getElementById('filter-month').value);
+  const cycleIdx = isNaN(chosenCycle) ? currentCycle : chosenCycle;
+  const filtered = allTxs.filter(t => dateInCycle(t.date, cycleIdx));
   const list = document.getElementById('tx-list');
   if (!filtered.length) { list.innerHTML = '<div class="empty">No transactions this month.</div>'; return; }
   list.innerHTML = filtered.map(t => `<div class="tx-item">
@@ -458,6 +493,48 @@ window.importRows = async () => {
 };
 
 document.getElementById('inp-date').value = new Date().toISOString().slice(0,10);
+// ─── BILT TRACKER ───
+const BILT_START = 9400;  // Original balance when tracking started
+const BILT_CURRENT = 3300; // Current effective balance (after k payment + .2k pending refund)
+
+function updateBiltTracker() {
+  const paid = BILT_START - BILT_CURRENT;
+  const pct = Math.round((paid / BILT_START) * 100);
+  document.getElementById('bilt-balance').textContent = '$' + BILT_CURRENT.toLocaleString();
+  document.getElementById('bilt-bar').style.width = pct + '%';
+  document.getElementById('bilt-paid').textContent = '$' + paid.toLocaleString() + ' paid off (' + pct + '%)';
+}
+updateBiltTracker();
+
+// ─── EXPORT CSV ───
+window.exportCSV = () => {
+  const chosenCycle = parseInt(document.getElementById('filter-month').value);
+  const cycleIdx = isNaN(chosenCycle) ? currentCycle : chosenCycle;
+  const txs = allTxs.filter(t => dateInCycle(t.date, cycleIdx));
+  if (!txs.length) { alert('No transactions in this cycle to export.'); return; }
+  const { start, end } = getCycleBounds(cycleIdx);
+  const fmt2 = d => d.toISOString().slice(0,10);
+  const header = ['Date', 'Category', 'Note', 'Amount', 'Type', 'Added By'];
+  const rows = txs.map(t => [
+    t.date,
+    t.cat,
+    (t.note || '').replace(/,/g, ' '),
+    t.amount.toFixed(2),
+    t.oneoff ? 'one-time' : 'recurring',
+    t.who || ''
+  ]);
+  const csv = [header, ...rows].map(r => r.join(',')).join('
+');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'budget-' + fmt2(start) + '-to-' + fmt2(end) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 </script>
 </body>
 </html>
+
